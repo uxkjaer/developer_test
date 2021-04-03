@@ -1,0 +1,115 @@
+<mvc:View
+	controllerName="ns.project2.controller.Detail"
+	xmlns="sap.m"
+	xmlns:semantic="sap.f.semantic"
+	xmlns:mvc="sap.ui.core.mvc">
+
+	<semantic:SemanticPage
+		id="detailPage"
+		busy="{detailView>/busy}"
+		busyIndicatorDelay="{detailView>/delay}">
+		<semantic:titleHeading>
+			<Title
+				text=" OrderID {OrderID}"
+				level="H2"/>
+		</semantic:titleHeading>
+		<semantic:headerContent>
+        <ObjectHeader
+        id="CustomerDetail"
+         title="Customer Details">
+            <ObjectAttribute title="CustomerID" text="{CustomerID}"/>
+            <ObjectAttribute title="Company name" text="{CompanyName}"/>
+            <ObjectAttribute title="Address" text="{Address}"/>
+			<ObjectAttribute title="City" text="{City}"/>
+            <ObjectAttribute title="Postalcode" text="{PostalCode}"/>
+			<ObjectAttribute title="Country" text="{Country}"/>
+            </ObjectHeader>
+		</semantic:headerContent>
+		<semantic:content>
+			<Table
+				id="lineItemsList"
+				width="auto"
+				items="{Order_Details}"
+				updateFinished=".onListUpdateFinished"
+				noDataText="{i18n>detailLineItemTableNoDataText}"
+				busyIndicatorDelay="{detailView>/lineItemTableDelay}">
+				<headerToolbar>
+					<Toolbar>
+						<Title
+							id="lineItemsTitle"
+							text="{detailView>/lineItemListTitle}"
+							titleStyle="H3"
+							level="H3"/>
+					</Toolbar>
+				</headerToolbar>
+				<columns>
+					<Column>
+						<Text text="OrderID"/>
+					</Column>
+                    <Column>
+						<Text text="ProductID"/>
+					</Column>
+                    <Column>
+						<Text text="UnitPrice"/>
+					</Column>
+                    <Column>
+						<Text text="Quantity"/>
+					</Column>
+					<Column
+						minScreenWidth="Tablet"
+						demandPopin="true"
+						hAlign="End">
+						<Text text="Discount"/>
+					</Column>
+				</columns>
+				<items>
+					<ColumnListItem>
+						<cells>
+							<ObjectIdentifier
+								title="{OrderID}"/>
+                            <ObjectIdentifier
+								title="{ProductID}"/>
+                            <ObjectIdentifier
+								title="{UnitPrice}"/>
+                            <ObjectIdentifier
+								title="{Quantity}"/>
+							<ObjectNumber
+								number="{
+									path: 'Discount',
+									formatter: '.formatter.currencyValue'
+								}"
+								unit="{Discount}"/>
+						</cells>
+					</ColumnListItem>
+				</items>
+			</Table>
+		</semantic:content>
+		<!--Semantic ShareMenu Buttons-->
+		<semantic:sendEmailAction>
+			<semantic:SendEmailAction
+				id="shareEmail"
+				press=".onSendEmailPress"/>
+		</semantic:sendEmailAction>
+
+		<semantic:closeAction>
+			<semantic:CloseAction
+					id="closeColumn"
+					press=".onCloseDetailPress"/>
+		</semantic:closeAction>
+
+		<semantic:fullScreenAction>
+			<semantic:FullScreenAction
+					id="enterFullScreen"
+					visible="{= !${device>/system/phone} &amp;&amp; !${appView>/actionButtonsInfo/midColumn/fullScreen}}"
+					press=".toggleFullScreen"/>
+		</semantic:fullScreenAction>
+		<semantic:exitFullScreenAction>
+			<semantic:ExitFullScreenAction
+					id="exitFullScreen"
+					visible="{= !${device>/system/phone} &amp;&amp; ${appView>/actionButtonsInfo/midColumn/fullScreen}}"
+					press=".toggleFullScreen"/>
+		</semantic:exitFullScreenAction>
+
+	</semantic:SemanticPage>
+
+</mvc:View>
