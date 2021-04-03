@@ -1,0 +1,18 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<QuickView
+		id="quickView">
+		<QuickViewPage
+            icon="sap-icon://user"
+            class="sap-icon--synchronize sap-icon--xl sap-icon--animate-spin"
+			title="{FirstName} {LastName}"
+			description="{Title}">
+
+            <QuickViewGroup heading="Contact Details" >
+				<QuickViewGroupElement
+                    label="Home Phone"
+					value="{HomePhone}"
+                    />
+			</QuickViewGroup>    
+		</QuickViewPage>
+	</QuickView>
+</core:FragmentDefinition>
