@@ -82,17 +82,14 @@
 					</OverflowToolbar>
 				</headerToolbar>
 				<items>
-					<ObjectListItem
-						type="Navigation"
-						press=".onSelectionChange"
-						title="{OrderID}"
-						number="{
-							path: 'OrderID',
-							formatter: '.formatter.currencyValue'
-						}"
-						numberUnit="{OrderID}">
-					</ObjectListItem>
-				</items>
+	<ObjectListItem
+		type="Navigation"
+		press=".onSelectionChange"
+		title="{OrderID}"
+	   	intro="{CustomerID}"
+           numberUnit="{OrderID}">
+	</ObjectListItem>
+</items>
 			</List>
 		</semantic:content>
 	</semantic:SemanticPage>
