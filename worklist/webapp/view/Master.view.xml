@@ -27,8 +27,7 @@
 						descending: false
 					}, 
                     parameters: {
-			       'expand': 'Customer'
-
+			       'expand': 'Customer,Employee'
 		},
                    
 					groupHeaderFactory: '.createGroupHeader'
@@ -39,7 +38,9 @@
 				growing="true"
 				growingScrollToLoad="true"
 				updateFinished=".onUpdateFinished"
-				selectionChange=".onSelectionChange">
+				selectionChange=".onSelectionChange"
+                >
+
 				<infoToolbar>
 					<Toolbar
 						active="true"
@@ -70,25 +71,15 @@
 						</SearchField>
 						<ToolbarSpacer/>
 						<Button
-							id="sortButton"
-							press=".onOpenViewSettings"
-							icon="sap-icon://sort"
-							type="Transparent"/>
-						<Button
 							id="filterButton"
 							press=".onOpenViewSettings"
 							icon="sap-icon://filter"
-							type="Transparent"/>
-						<Button
-							id="groupButton"
-							press=".onOpenViewSettings"
-							icon="sap-icon://group-2"
 							type="Transparent"/>
 					</OverflowToolbar>
 				</headerToolbar>
                 <infoToolbar>
 			<OverflowToolbar>
-				<Label text="Wide range of available products"/>
+				<Label text="Worklist view"/>
 			</OverflowToolbar>
 		</infoToolbar>
 		<columns>
@@ -115,18 +106,15 @@
 			</Column>
 		</columns>
 				<items>
+                
 	<ColumnListItem>
 				<cells>
 					<ObjectIdentifier
-                    	type="Navigation"
-                        press=".onSelectionChange"
+                    
 						text="{OrderID}"/>
 					<Text
 						text="{CustomerID}" />
 					<Text
-                        type="Navigation"
-                        press=".onEmpDetails"
-                        active="true"
 						text="{EmployeeID}" />
                     <Text
 						text="{RequiredDate}" />

@@ -2,13 +2,12 @@ sap.ui.define([
     "./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
-	"sap/ui/model/Sorter",
 	"sap/ui/model/FilterOperator",
-	"sap/m/GroupHeaderListItem",
+	// "sap/m/GroupHeaderListItem",
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
 	"../model/formatter"
-], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter) {
+], function (BaseController, JSONModel, Filter, FilterOperator, Device, Fragment, formatter) {
 	"use strict";
 
 	return BaseController.extend("ns.worklist.controller.Master", {
@@ -31,24 +30,6 @@ sap.ui.define([
 				// so it can be restored later on. Busy handling on the master list is
 				// taken care of by the master list itself.
 				iOriginalBusyDelay = oList.getBusyIndicatorDelay();
-
-			this._oGroupFunctions = {
-				OrderID : function(oContext) {
-					var iNumber = oContext.getProperty('OrderID'),
-						key, text;
-					if (iNumber <= 20) {
-						key = "LE20";
-						text = this.getResourceBundle().getText("masterGroup1Header1");
-					} else {
-						key = "GT20";
-						text = this.getResourceBundle().getText("masterGroup1Header2");
-					}
-					return {
-						key: key,
-						text: text
-					};
-				}.bind(this)
-			};
 
 			this._oList = oList;
 			// keeps the filter and search state
@@ -112,14 +93,18 @@ sap.ui.define([
 			var sQuery = oEvent.getParameter("query");
 
 			if (sQuery) {
-				this._oListFilterState.aSearch = [new Filter("OrderID", FilterOperator.Contains, sQuery)];
-			} else {
+				this._oListFilterState.aSearch = [new Filter("RequiredDate", FilterOperator.Contains, sQuery)];
+            } 
+            else if (condition) {
+                this._oListFilterState.aSearch = [new Filter("CustomerID", FilterOperator.Contains, sQuery)];
+            }  
+            else  {
 				this._oListFilterState.aSearch = [];
 			}
 			this._applyFilterSearch();
 
 		},
-
+        
 		/**
 		 * Event handler for refresh event. Keeps filter, sort
 		 * and group settings and refreshes the list binding.
@@ -138,11 +123,6 @@ sap.ui.define([
 			var sDialogTab = "filter";
 			if (oEvent.getSource() instanceof sap.m.Button) {
 				var sButtonId = oEvent.getSource().getId();
-				if (sButtonId.match("sort")) {
-					sDialogTab = "sort";
-				} else if (sButtonId.match("group")) {
-					sDialogTab = "group";
-				}
 			}
 			// load asynchronous XML fragment
 			if (!this.byId("viewSettingsDialog")) {
@@ -194,7 +174,7 @@ sap.ui.define([
 			this._oListFilterState.aFilter = aFilters;
 			this._updateFilterBar(aCaptions.join(", "));
 			this._applyFilterSearch();
-			this._applySortGroup(oEvent);
+			// this._applySortGroup(oEvent);
 		},
 
 		/**
@@ -202,24 +182,24 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the confirm event
 		 * @private
 		 */
-		_applySortGroup: function (oEvent) {
-			var mParams = oEvent.getParameters(),
-				sPath,
-				bDescending,
-				aSorters = [];
-			// apply sorter to binding
-			// (grouping comes before sorting)
-			if (mParams.groupItem) {
-				sPath = mParams.groupItem.getKey();
-				bDescending = mParams.groupDescending;
-				var vGroup = this._oGroupFunctions[sPath];
-				aSorters.push(new Sorter(sPath, bDescending, vGroup));
-			}
-			sPath = mParams.sortItem.getKey();
-			bDescending = mParams.sortDescending;
-			aSorters.push(new Sorter(sPath, bDescending));
-			this._oList.getBinding("items").sort(aSorters);
-		},
+		// _applySortGroup: function (oEvent) {
+		// 	var mParams = oEvent.getParameters(),
+		// 		sPath,
+		// 		bDescending,
+		// 		aSorters = [];
+		// 	// apply sorter to binding
+		// 	// (grouping comes before sorting)
+		// 	if (mParams.groupItem) {
+		// 		sPath = mParams.groupItem.getKey();
+		// 		bDescending = mParams.groupDescending;
+		// 		var vGroup = this._oGroupFunctions[sPath];
+		// 		aSorters.push(new Sorter(sPath, bDescending, vGroup));
+		// 	}
+		// 	sPath = mParams.sortItem.getKey();
+		// 	bDescending = mParams.sortDescending;
+		// 	aSorters.push(new Sorter(sPath, bDescending));
+		// 	this._oList.getBinding("items").sort(aSorters);
+		// },
 
 		/**
 		 * Event handler for the list selection event
@@ -254,12 +234,12 @@ sap.ui.define([
 		 * @public
 		 * @returns {sap.m.GroupHeaderListItem} group header with non-capitalized caption.
 		 */
-		createGroupHeader : function (oGroup) {
-			return new GroupHeaderListItem({
-				title : oGroup.text,
-				upperCase : false
-			});
-		},
+		// createGroupHeader : function (oGroup) {
+		// 	return new GroupHeaderListItem({
+		// 		title : oGroup.text,
+		// 		upperCase : false
+		// 	});
+		// },
 
 		/**
 		 * Event handler for navigating back.
@@ -270,36 +250,7 @@ sap.ui.define([
 			// eslint-disable-next-line sap-no-history-manipulation
 			history.go(-1);
         },
-        onEmpDetails: function (oEvent) {
-			var oModel = this.getView().getModel();
-			this.openQuickView(oEvent, oModel);
-        },
         
- openQuickView: function (oEvent, oModel) {
-        	var oEmpID = oEvent.getSource(),
-                oView = this.getView(),
-                oContext = oView.getBindingContext();
-            
-               //Load fragment and add as dependent of this(Detail) view    
-		if (!this._pQuickView) {
-			this._pQuickView = Fragment.load({
-				id: oView.getId(),
-				name: "ns.HTML5Module.QuickView.QuickView",
-				controller: this
-			}).then(function (oQuickView) {
-				oView.addDependent(oQuickView);
-				return oQuickView;
-			});
-		}
-		this._pQuickView.then(function (oQuickView){     
-                //Set path to Employer         
-                var sPath = `${oContext.getPath()}/Employee`;
-                //Bind path and model to Quickview
-                oQuickView.bindElement({ path: sPath, model: oModel.name });
-                //Set EmpID field as the source so that popup launches it 
-		oQuickView.openBy(oEmpID);
-			});
-        },
 
 		/* =========================================================== */
 		/* begin: internal methods                                     */
@@ -313,8 +264,8 @@ sap.ui.define([
 				delay: 0,
 				title: this.getResourceBundle().getText("masterTitleCount", [0]),
 				noDataText: this.getResourceBundle().getText("masterListNoDataText"),
-				sortBy: "OrderID",
-				groupBy: "None"
+				// sortBy: "OrderID",
+				// groupBy: "None"
 			});
 		},
 
