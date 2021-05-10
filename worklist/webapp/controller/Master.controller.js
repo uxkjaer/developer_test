@@ -3,7 +3,6 @@ sap.ui.define([
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/FilterOperator",
-	// "sap/m/GroupHeaderListItem",
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
 	"../model/formatter"
@@ -89,15 +88,11 @@ sap.ui.define([
 				this.onRefresh();
 				return;
 			}
-
-			var sQuery = oEvent.getParameter("query");
+             sQuery = oView.byId("searchField").getValue();
 
 			if (sQuery) {
-				this._oListFilterState.aSearch = [new Filter("RequiredDate", FilterOperator.Contains, sQuery)];
+				this._oListFilterState.aSearch = [new Filter("OrderID", FilterOperator.Contains, sQuery)];
             } 
-            else if (condition) {
-                this._oListFilterState.aSearch = [new Filter("CustomerID", FilterOperator.Contains, sQuery)];
-            }  
             else  {
 				this._oListFilterState.aSearch = [];
 			}
@@ -160,10 +155,10 @@ sap.ui.define([
 			aFilterItems.forEach(function (oItem) {
 				switch (oItem.getKey()) {
 					case "Filter1" :
-						aFilters.push(new Filter("OrderID", FilterOperator.LE, 100));
+						aFilters.push(new Filter("CustomerID", FilterOperator.Contains, oItem));
 						break;
 					case "Filter2" :
-						aFilters.push(new Filter("OrderID", FilterOperator.GT, 100));
+						aFilters.push(new Filter("RequiredDate", FilterOperator.Contains, oItem));
 						break;
 					default :
 						break;
@@ -285,7 +280,8 @@ sap.ui.define([
 			// set the layout property of FCL control to show two columns
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getRouter().navTo("object", {
-				objectId : oItem.getBindingContext().getProperty("OrderID")
+                // objectId : oItem.getBindingContext().getProperty("OrderID")
+                objectId : oItem.getBindingContext().getProperty("CustomerID")
 			}, bReplace);
 		},
 
