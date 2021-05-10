@@ -1,5 +1,5 @@
 sap.ui.define([
-	"./BaseController",
+    "./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/Sorter",
@@ -25,7 +25,7 @@ sap.ui.define([
 		 */
 		onInit : function () {
 			// Control state model
-			var oList = this.byId("list"),
+			var oList = this.byId("table"),
 				oViewModel = this._createViewModel(),
 				// Put down master list's original value for busy indicator delay,
 				// so it can be restored later on. Busy handling on the master list is
@@ -269,7 +269,37 @@ sap.ui.define([
 		onNavBack : function() {
 			// eslint-disable-next-line sap-no-history-manipulation
 			history.go(-1);
-		},
+        },
+        onEmpDetails: function (oEvent) {
+			var oModel = this.getView().getModel();
+			this.openQuickView(oEvent, oModel);
+        },
+        
+ openQuickView: function (oEvent, oModel) {
+        	var oEmpID = oEvent.getSource(),
+                oView = this.getView(),
+                oContext = oView.getBindingContext();
+            
+               //Load fragment and add as dependent of this(Detail) view    
+		if (!this._pQuickView) {
+			this._pQuickView = Fragment.load({
+				id: oView.getId(),
+				name: "ns.HTML5Module.QuickView.QuickView",
+				controller: this
+			}).then(function (oQuickView) {
+				oView.addDependent(oQuickView);
+				return oQuickView;
+			});
+		}
+		this._pQuickView.then(function (oQuickView){     
+                //Set path to Employer         
+                var sPath = `${oContext.getPath()}/Employee`;
+                //Bind path and model to Quickview
+                oQuickView.bindElement({ path: sPath, model: oModel.name });
+                //Set EmpID field as the source so that popup launches it 
+		oQuickView.openBy(oEmpID);
+			});
+        },
 
 		/* =========================================================== */
 		/* begin: internal methods                                     */

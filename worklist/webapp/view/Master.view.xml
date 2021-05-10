@@ -16,8 +16,8 @@
 		</semantic:titleHeading>
 		<semantic:content>
 			<!-- For client side filtering add this to the items attribute: parameters: {operationMode: 'Client'}}" -->
-			<List
-				id="list"
+			<Table
+				id="table"
 				width="auto"
 				class="sapFDynamicPageAlignContent"
 				items="{
@@ -25,7 +25,12 @@
 					sorter: {
 						path: 'OrderID',
 						descending: false
-					},
+					}, 
+                    parameters: {
+			       'expand': 'Customer'
+
+		},
+                   
 					groupHeaderFactory: '.createGroupHeader'
 				}"
 				busyIndicatorDelay="{masterView>/delay}"
@@ -81,16 +86,57 @@
 							type="Transparent"/>
 					</OverflowToolbar>
 				</headerToolbar>
+                <infoToolbar>
+			<OverflowToolbar>
+				<Label text="Wide range of available products"/>
+			</OverflowToolbar>
+		</infoToolbar>
+		<columns>
+			<Column
+				width="12em">
+				<Text text="Sales Order ID" />
+			</Column>
+			<Column
+				width="12em"
+				demandPopin="true">
+				<Text text="Customer ID" />
+			</Column>
+			<Column
+				width="12em"
+				demandPopin="true"
+				hAlign="End">
+				<Text text="Employee ID" />
+			</Column>
+			<Column
+				minScreenWidth="Desktop"
+				demandPopin="true"
+				hAlign="Center">
+				<Text text="RequiredDate" />
+			</Column>
+		</columns>
 				<items>
-	<ObjectListItem
-		type="Navigation"
-		press=".onSelectionChange"
-		title="{OrderID}"
-	   	intro="{CustomerID}"
-           numberUnit="{OrderID}">
-	</ObjectListItem>
+	<ColumnListItem>
+				<cells>
+					<ObjectIdentifier
+                    	type="Navigation"
+                        press=".onSelectionChange"
+						text="{OrderID}"/>
+					<Text
+						text="{CustomerID}" />
+					<Text
+                        type="Navigation"
+                        press=".onEmpDetails"
+                        active="true"
+						text="{EmployeeID}" />
+                    <Text
+						text="{RequiredDate}" />
+                    
+					
+					
+				</cells>
+			</ColumnListItem>
 </items>
-			</List>
+			</Table>
 		</semantic:content>
 	</semantic:SemanticPage>
 </mvc:View>

@@ -1,0 +1,30 @@
+<core:FragmentDefinition xmlns="sap.m" xmlns:core="sap.ui.core">
+	<QuickView
+		id="quickView">
+		<QuickViewPage
+            icon="sap-icon://building"
+			title="{EmployeeID}"
+			description="Picture: {Photo}">
+
+			<QuickViewGroup heading="Title" >
+				<QuickViewGroupElement
+                    label="Employee Title"
+                    value="{Title}"/>			
+            </QuickViewGroup>
+
+            <QuickViewGroup heading="Contact Details" >
+               <QuickViewGroupElement
+                    label="First name"
+					value="{FirstName}"/>
+                <QuickViewGroupElement
+                    label="Last name"
+					value="{LastName}"/>
+				<QuickViewGroupElement
+                    label=" Home Phone"
+					value="{HomePhone}"
+                    type="mobile"/>
+            	
+			</QuickViewGroup>    
+		</QuickViewPage>
+	</QuickView>
+</core:FragmentDefinition>

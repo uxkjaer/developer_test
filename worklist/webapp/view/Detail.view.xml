@@ -15,14 +15,14 @@
 				level="H2"/>
 		</semantic:titleHeading>
 		<semantic:headerContent>
-	<ObjectAttribute title="{i18n>Customer}" text="{CustomerID}"/>
-    <ObjectAttribute title="{i18n>SalesOrder}" text="{OrderID}"/>
-    <ObjectAttribute title="{i18n>CompanyName}" text="{CompanyName}"/>
+	<!-- <ObjectAttribute title="{i18n>Customer}" text="{CustomerID}"/> -->
+    <ObjectAttribute title="Sales Order" text="{OrderID}"/>
+    <ObjectAttribute title="Company name" text="{Customer/CompanyName}"/>
   
-    <ObjectAttribute title="{i18n>Address}" text="{ShipAddress}"/>
-    <ObjectAttribute title="{i18n>City}" text="{ShipCity}"/>
-        <ObjectAttribute title="{i18n>Postalcode}" text="{ShipPostalCode}"/>
-    <ObjectAttribute title="{i18n>Country}" text="{ShipCountry}"/>
+    <ObjectAttribute title="Address" text="{Customer/Address}"/>
+    <ObjectAttribute title="City" text="{Customer/City}"/>
+        <ObjectAttribute title="Postalcode" text="{Customer/PostalCode}"/>
+    <ObjectAttribute title="Country" text="{Customer/Country}"/>
 
 
 </semantic:headerContent>
