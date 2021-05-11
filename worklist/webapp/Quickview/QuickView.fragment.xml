@@ -4,24 +4,24 @@
 		<QuickViewPage
             icon="sap-icon://building"
 			title="{EmployeeID}"
-			description="Picture: {Photo}">
+			description="Picture: {Employee/Photo}">
 
 			<QuickViewGroup heading="Title" >
 				<QuickViewGroupElement
                     label="Employee Title"
-                    value="{Title}"/>			
+                    value="{Employee/Title}"/>			
             </QuickViewGroup>
 
             <QuickViewGroup heading="Contact Details" >
                <QuickViewGroupElement
                     label="First name"
-					value="{FirstName}"/>
+					value="{Employee/FirstName}"/>
                 <QuickViewGroupElement
                     label="Last name"
-					value="{LastName}"/>
+					value="{Employee/LastName}"/>
 				<QuickViewGroupElement
                     label=" Home Phone"
-					value="{HomePhone}"
+					value="{Employee/HomePhone}"
                     type="mobile"/>
             	
 			</QuickViewGroup>    

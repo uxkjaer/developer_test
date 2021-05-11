@@ -27,7 +27,7 @@
 						descending: false
 					}, 
                     parameters: {
-			       'expand': 'Customer,Employee'
+			       'expand': 'Customer'
 		},
                    
 					groupHeaderFactory: '.createGroupHeader'
@@ -55,7 +55,10 @@
 				</infoToolbar>
 				<headerToolbar>
 					<OverflowToolbar>
+
+           
 						<SearchField
+                                         
 							id="searchField"
 							showRefreshButton="true"
 							tooltip="{i18n>masterSearchTooltip}"
@@ -70,11 +73,13 @@
 							</layoutData>
 						</SearchField>
 						<ToolbarSpacer/>
+                
 						<Button
 							id="filterButton"
 							press=".onOpenViewSettings"
 							icon="sap-icon://filter"
 							type="Transparent"/>
+                           
 					</OverflowToolbar>
 				</headerToolbar>
                 <infoToolbar>
@@ -82,7 +87,29 @@
 				<Label text="Worklist view"/>
 			</OverflowToolbar>
 		</infoToolbar>
-		<columns>
+		
+				<items>
+                
+	<ColumnListItem  type="Active" >
+				<cells>
+					<ObjectIdentifier
+
+						text="{OrderID}"/>
+					<Text
+						text="{CustomerID}" />
+					<ObjectAttribute          
+                 text="{EmployeeID}"
+                 active="true"
+                 press="onEmpDetails" />
+                    <Text
+						text="{RequiredDate}" />
+                    
+					
+					
+				</cells>
+			</ColumnListItem>
+</items>
+<columns>
 			<Column
 				width="12em">
 				<Text text="Sales Order ID" />
@@ -105,25 +132,6 @@
 				<Text text="RequiredDate" />
 			</Column>
 		</columns>
-				<items>
-                
-	<ColumnListItem>
-				<cells>
-					<ObjectIdentifier
-                    
-						text="{OrderID}"/>
-					<Text
-						text="{CustomerID}" />
-					<Text
-						text="{EmployeeID}" />
-                    <Text
-						text="{RequiredDate}" />
-                    
-					
-					
-				</cells>
-			</ColumnListItem>
-</items>
 			</Table>
 		</semantic:content>
 	</semantic:SemanticPage>
