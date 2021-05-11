@@ -101,7 +101,7 @@ sap.ui.define([
 		if (!this._pQuickView) {
 			this._pQuickView = Fragment.load({
 				id: oView.getId(),
-				name: "ns.worklist.QuickView.QuickView",
+				name: "ns.worklist.Quickview.Quickview",
 				controller: this
 			}).then(function (oQuickView) {
 				oView.addDependent(oQuickView);
@@ -212,10 +212,10 @@ sap.ui.define([
 			aFilterItems.forEach(function (oItem) {
 				switch (oItem.getKey()) {
 					case "Filter1" :
-						aFilters.push(new Filter("OrderID", FilterOperator.LE, 100));
+						aFilters.push(new Filter("CustomerID", FilterOperator.Contains, oItem.getText()));
 						break;
 					case "Filter2" :
-						aFilters.push(new Filter("OrderID", FilterOperator.GT, 100));
+						aFilters.push(new Filter("RequiredDate", FilterOperator.Contains, oItem.getText()));
 						break;
 					default :
 						break;

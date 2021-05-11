@@ -15,7 +15,6 @@
 				level="H2"/>
 		</semantic:titleHeading>
 		<semantic:content>
-			<!-- For client side filtering add this to the items attribute: parameters: {operationMode: 'Client'}}" -->
 			<Table
 				id="table"
 				width="auto"
@@ -100,7 +99,7 @@
 					<ObjectAttribute          
                  text="{EmployeeID}"
                  active="true"
-                 press="onEmpDetails" />
+                 press=".onEmpDetails" />
                     <Text
 						text="{RequiredDate}" />
                     
