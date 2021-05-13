@@ -17,19 +17,18 @@
 		<filterItems>
 			<ViewSettingsFilterItem
 				id="filterItems"
-				text="{i18n>masterFilterName}"
-				multiSelect="false">
+				text="{i18n>masterFilter1}"
+				multiSelect="false"
+				items="{/Orders}"
+				>
 				<items>
 					<ViewSettingsItem
-						id="viewFilter1"
-						text="{i18n>masterFilter1}"
-						key="Filter1"/>
-					<ViewSettingsItem
-						id="viewFilter2"
-						text="{i18n>masterFilter2}"
-						key="Filter2"/>
+						text="{Customer/CompanyName}"
+						key="{CustomerID}"/>
+				
 				</items>
 			</ViewSettingsFilterItem>
+			
 		</filterItems>
 		<groupItems>
 			<ViewSettingsItem

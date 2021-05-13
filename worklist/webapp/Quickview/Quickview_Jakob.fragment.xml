@@ -2,25 +2,28 @@
 	<QuickView
 		id="quickView">
 		<QuickViewPage
-            icon="{ path: 'Employee/Photo', formatter: '.getImage'}"
+            icon="sap-icon://building"
 			title="{EmployeeID}"
-			description="Picture: {Employee/Photo}">
+			description="Picture: {Photo}">
+
 			<QuickViewGroup heading="Title" >
 				<QuickViewGroupElement
                     label="Employee Title"
-                    value="{Employee/Title}"/>			
+                    value="{Title}"/>			
             </QuickViewGroup>
+
             <QuickViewGroup heading="Contact Details" >
                <QuickViewGroupElement
                     label="First name"
-					value="{Employee/FirstName}"/>
+					value="{FirstName}"/>
                 <QuickViewGroupElement
                     label="Last name"
-					value="{Employee/LastName}"/>
+					value="{LastName}"/>
 				<QuickViewGroupElement
                     label=" Home Phone"
-					value="{Employee/HomePhone}"
-                    type="mobile"/>            	
+					value="{HomePhone}"
+                    type="mobile"/>
+            	
 			</QuickViewGroup>    
 		</QuickViewPage>
 	</QuickView>

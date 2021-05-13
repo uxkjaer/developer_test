@@ -1,137 +1,95 @@
-<mvc:View
-	controllerName="ns.worklist.controller.Master"
+<mvc:View controllerName="ns.worklist.controller.Master"
 	xmlns="sap.m"
 	xmlns:semantic="sap.f.semantic"
+	xmlns:fb="sap.ui.comp.filterbar"
+	xmlns:core="sap.ui.core"
 	xmlns:mvc="sap.ui.core.mvc">
-
-	<semantic:SemanticPage
-		id="masterPage"
-		preserveHeaderStateOnScroll="true"
-		toggleHeaderOnTitleClick="false">
+	<semantic:SemanticPage id="masterPage" preserveHeaderStateOnScroll="true" toggleHeaderOnTitleClick="false">
 		<semantic:titleHeading>
-			<Title
-				id="masterPageTitle"
-				text="{masterView>/title}"
-				level="H2"/>
+			<Title id="masterPageTitle" text="{masterView>/title}" level="H2"/>
 		</semantic:titleHeading>
 		<semantic:content>
-			<Table
-				id="table"
-				width="auto"
-				class="sapFDynamicPageAlignContent"
-				items="{
+			<VBox>
+				<fb:FilterBar reset="onReset" search="onSearch" showRestoreButton="true" showClearButton="true">
+					<fb:filterGroupItems>
+						<fb:FilterGroupItem groupName="__$INTERNAL$" name="A" label="Request Date" partOfCurrentVariant="true" visibleInFilterBar="true">
+							<fb:control>
+								<DatePicker id="filterDate" valueFormat="dd-MM-yyyy" displayFormat="dd-MM-yyyy"/>
+							</fb:control>
+						</fb:FilterGroupItem>
+
+						<fb:FilterGroupItem groupName="G1" groupTitle="Group1" name="A" label="Company" labelTooltip="Tooltip GroupItem Example" visibleInFilterBar="true">
+							<fb:control>
+								<MultiComboBox id="filterCustomer" items="{path: '/Customers', sorter: { path: 'CompanyName'}}">
+									<core:Item key="{CustomerID}" text="{CompanyName}"/>
+
+								</MultiComboBox>
+							</fb:control>
+						</fb:FilterGroupItem>
+					</fb:filterGroupItems>
+				</fb:FilterBar>
+				<Table id="table" width="auto" class="sapFDynamicPageAlignContent" items="{
 					path: '/Orders',
 					sorter: {
 						path: 'OrderID',
 						descending: false
 					}, 
                     parameters: {
-			       'expand': 'Customer'
-		},
-                   
+			       		'expand': 'Customer, Employee'
+					},
 					groupHeaderFactory: '.createGroupHeader'
-				}"
-				busyIndicatorDelay="{masterView>/delay}"
-				noDataText="{masterView>/noDataText}"
-				mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}"
-				growing="true"
-				growingScrollToLoad="true"
-				updateFinished=".onUpdateFinished"
-				selectionChange=".onSelectionChange"
-                >
+				}" busyIndicatorDelay="{masterView>/delay}" noDataText="{masterView>/noDataText}" mode="{= ${device>/system/phone} ? 'None' : 'SingleSelectMaster'}" growing="true" growingScrollToLoad="true" updateFinished=".onUpdateFinished" selectionChange=".onSelectionChange">
 
-				<infoToolbar>
-					<Toolbar
-						active="true"
-						id="filterBar"
-						visible="{masterView>/isFilterBarVisible}"
-						press=".onOpenViewSettings">
-						<Title
-							id="filterBarLabel"
-							text="{masterView>/filterBarLabel}"
-							level="H3"/>
-					</Toolbar>
-				</infoToolbar>
-				<headerToolbar>
-					<OverflowToolbar>
-
-           
-						<SearchField
-                                         
-							id="searchField"
-							showRefreshButton="true"
-							tooltip="{i18n>masterSearchTooltip}"
-							search=".onSearch"
-							width="auto">
-							<layoutData>
-								<OverflowToolbarLayoutData
-									minWidth="150px"
-									maxWidth="240px"
-									shrinkable="true"
-									priority="NeverOverflow"/>
-							</layoutData>
-						</SearchField>
-						<ToolbarSpacer/>
-                
-						<Button
-							id="filterButton"
-							press=".onOpenViewSettings"
-							icon="sap-icon://filter"
-							type="Transparent"/>
-                           
-					</OverflowToolbar>
-				</headerToolbar>
-                <infoToolbar>
-			<OverflowToolbar>
-				<Label text="Worklist view"/>
-			</OverflowToolbar>
-		</infoToolbar>
-		
-				<items>
-                
-	<ColumnListItem  type="Active" >
-				<cells>
-					<ObjectIdentifier
-
-						text="{OrderID}"/>
-					<Text
-						text="{CustomerID}" />
-					<ObjectAttribute          
-                 text="{EmployeeID}"
-                 active="true"
-                 press=".onEmpDetails" />
-                    <Text
-						text="{RequiredDate}" />
-                    
-					
-					
-				</cells>
-			</ColumnListItem>
-</items>
-<columns>
-			<Column
-				width="12em">
-				<Text text="Sales Order ID" />
-			</Column>
-			<Column
-				width="12em"
-				demandPopin="true">
-				<Text text="Customer ID" />
-			</Column>
-			<Column
-				width="12em"
-				demandPopin="true"
-				hAlign="End">
-				<Text text="Employee ID" />
-			</Column>
-			<Column
-				minScreenWidth="Desktop"
-				demandPopin="true"
-				hAlign="Center">
-				<Text text="RequiredDate" />
-			</Column>
-		</columns>
-			</Table>
+					<infoToolbar>
+						<Toolbar active="true" id="filterBar" visible="{masterView>/isFilterBarVisible}" press=".onOpenViewSettings">
+							<Title id="filterBarLabel" text="{masterView>/filterBarLabel}" level="H3"/>
+						</Toolbar>
+					</infoToolbar>
+					<headerToolbar>
+						<OverflowToolbar>
+							<SearchField id="searchField" showRefreshButton="true" tooltip="{i18n>masterSearchTooltip}" search=".onSearch" width="auto">
+								<layoutData>
+									<OverflowToolbarLayoutData minWidth="150px" maxWidth="240px" shrinkable="true" priority="NeverOverflow"/>
+								</layoutData>
+							</SearchField>
+							<ToolbarSpacer/>
+							<Button id="filterButton" press=".onOpenViewSettings" icon="sap-icon://filter" type="Transparent"/>
+						</OverflowToolbar>
+					</headerToolbar>
+					<infoToolbar>
+						<OverflowToolbar>
+							<Label text="Worklist view"/>
+						</OverflowToolbar>
+					</infoToolbar>
+					<items>
+						<ColumnListItem type="Active">
+							<cells>
+								<ObjectIdentifier text="{OrderID}"/>
+								<Text text="{CustomerID}" />
+								<ObjectAttribute text="{EmployeeID}" active="true" press=".onEmpDetails" />
+								<Text text="{path: 'RequiredDate', type : 'sap.ui.model.type.Date',
+									formatOptions: {
+										style : 'medium'
+									}}" />
+							</cells>
+						</ColumnListItem>
+					</items>
+					<columns>
+						<Column width="12em">
+							<Text text="Sales Order ID" />
+						</Column>
+						<Column width="12em" demandPopin="true">
+							<Text text="Customer ID" />
+						</Column>
+						<Column width="12em" demandPopin="true" hAlign="End">
+							<Text text="Employee ID" />
+						</Column>
+						<Column minScreenWidth="Desktop" demandPopin="true" hAlign="Center">
+							<Text text="RequiredDate" />
+						</Column>
+					</columns>
+				</Table>
+			</VBox>
 		</semantic:content>
 	</semantic:SemanticPage>
 </mvc:View>
