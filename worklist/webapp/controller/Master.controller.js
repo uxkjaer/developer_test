@@ -1,14 +1,14 @@
 sap.ui.define([
-    "./BaseController",
+	"./BaseController",
 	"sap/ui/model/json/JSONModel",
 	"sap/ui/model/Filter",
 	"sap/ui/model/Sorter",
 	"sap/ui/model/FilterOperator",
-    "sap/m/GroupHeaderListItem",
-    
+	"sap/m/GroupHeaderListItem",
+
 	"sap/ui/Device",
 	"sap/ui/core/Fragment",
-	"../model/formatter"
+	"ns/worklist/model/formatter"
 ], function (BaseController, JSONModel, Filter, Sorter, FilterOperator, GroupHeaderListItem, Device, Fragment, formatter) {
 	"use strict";
 
@@ -24,7 +24,7 @@ sap.ui.define([
 		 * Called when the master list controller is instantiated. It sets up the event handling for the master/detail communication and other lifecycle tasks.
 		 * @public
 		 */
-		onInit : function () {
+		onInit: function () {
 			// Control state model
 			var oList = this.byId("table"),
 				oViewModel = this._createViewModel(),
@@ -34,7 +34,7 @@ sap.ui.define([
 				iOriginalBusyDelay = oList.getBusyIndicatorDelay();
 
 			this._oGroupFunctions = {
-				OrderID : function(oContext) {
+				OrderID: function (oContext) {
 					var iNumber = oContext.getProperty('OrderID'),
 						key, text;
 					if (iNumber <= 20) {
@@ -54,15 +54,15 @@ sap.ui.define([
 			this._oList = oList;
 			// keeps the filter and search state
 			this._oListFilterState = {
-				aFilter : [],
-				aSearch : []
+				aFilter: [],
+				aSearch: []
 			};
 
 			this.setModel(oViewModel, "masterView");
 			// Make sure, busy indication is showing immediately so there is no
 			// break after the busy indication for loading the view's meta data is
 			// ended (see promise 'oWhenMetadataIsLoaded' in AppController)
-			oList.attachEventOnce("updateFinished", function(){
+			oList.attachEventOnce("updateFinished", function () {
 				// Restore original busy indicator delay for the list
 				oViewModel.setProperty("/delay", iOriginalBusyDelay);
 			});
@@ -77,6 +77,18 @@ sap.ui.define([
 			this.getRouter().attachBypassed(this.onBypassed, this);
 		},
 
+		/**
+		 * Jakob
+		 * There is an issue with loading images from the northwind service, 
+		 * so we have to remove the first 104 characters and specify that the string is an image
+		 * Check this blog https://blogs.sap.com/2017/02/08/displaying-images-in-sapui5-received-from-the-northwind-odata-service/
+		 * @param {*} sText 
+		 * @returns 
+		 */
+		getImage: function (sText) {
+			return (sText) ? `data:image/bmp;base64,${sText.substr(104)}` : null;
+		},
+
 		/* =========================================================== */
 		/* event handlers                                              */
 		/* =========================================================== */
@@ -87,38 +99,43 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the update finished event
 		 * @public
 		 */
-        onEmpDetails: function (oEvent) {
+		onEmpDetails: function (oEvent) {
 			var oModel = this.getView().getModel();
 			this.openQuickView(oEvent, oModel);
-                     },
-        
-        openQuickView: function (oEvent, oModel) {
-        	var oEmpID = oEvent.getSource(),
-                oView = this.getView(),
-                oContext = oView.getBindingContext();
-            
-               //Load fragment and add as dependent of this view    
-		if (!this._pQuickView) {
-			this._pQuickView = Fragment.load({
-				id: oView.getId(),
-				name: "ns.worklist.Quickview.Quickview",
-				controller: this
-			}).then(function (oQuickView) {
-				oView.addDependent(oQuickView);
-				return oQuickView;
-			});
-		}
-		this._pQuickView.then(function (oQuickView){     
-                //Set path to Employer         
-                var sPath = `${oContext.getPath()}/Employee`;
-                //Bind path and model to Quickview
-                oQuickView.bindElement({ path: sPath, model: oModel.name });
-                //Set EmpID field as the source so that popup launches it 
-		oQuickView.openBy(oEmpID);
-			});
-        },
+		},
 
-		onUpdateFinished : function (oEvent) {
+		openQuickView: function (oEvent, oModel) {
+			var oEmpID = oEvent.getSource(),
+				oView = this.getView(),
+				oContext = oEmpID.getBindingContext();
+
+			//Load fragment and add as dependent of this view    
+			if (!this._pQuickView) {
+				this._pQuickView = Fragment.load({
+					id: oView.getId(),
+					name: "ns.worklist.Quickview.Quickview",
+					controller: this
+				}).then(function (oQuickView) {
+					oView.addDependent(oQuickView);
+					return oQuickView;
+				});
+			}
+			this._pQuickView.then(function (oQuickView) {
+				//Set path to Employer         
+				/**
+				 * Jakob
+				 * Because you bind to the employee navigation path in your fragment, you don't need to add it to the sPath variable. Another way would be to add it here and remove the Employee path from the fragment. See copy of fragment
+				 */
+				var sPath = `${oContext.getPath()}`;
+				//Bind path and model to Quickview
+				oQuickView.bindElement({ path: sPath, model: oModel.name });
+
+				//Set EmpID field as the source so that popup launches it 
+				oQuickView.openBy(oEmpID);
+			});
+		},
+
+		onUpdateFinished: function (oEvent) {
 			// update the master list object counter after new data is loaded
 			this._updateListItemCount(oEvent.getParameter("total"));
 		},
@@ -131,7 +148,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the search event
 		 * @public
 		 */
-		onSearch : function (oEvent) {
+		onSearch: function (oEvent) {
 			if (oEvent.getParameters().refreshButtonPressed) {
 				// Search field's 'refresh' button has been pressed.
 				// This is visible if you select any master list item.
@@ -142,12 +159,24 @@ sap.ui.define([
 			}
 
 			var sQuery = oEvent.getParameter("query");
-
+			this._oListFilterState.aSearch = [];
 			if (sQuery) {
-				this._oListFilterState.aSearch = [new Filter("OrderID", FilterOperator.Contains, sQuery)];
-			} else {
-				this._oListFilterState.aSearch = [];
+				this._oListFilterState.aSearch = [new Filter("OrderID", FilterOperator.EQ, sQuery)];
+			} 
+			/**
+			 * Jakob
+			 * Added filter capability for date and customer. 
+			 */
+			if (this.getView().byId("filterDate").getDateValue()) {
+				this._oListFilterState.aSearch.push( new Filter("RequiredDate", FilterOperator.EQ, this.getView().byId("filterDate").getDateValue());
 			}
+			if (this.getView().byId("filterCustomer").getSelectedItems().length > 0) {
+				this.getView().byId("filterCustomer").getSelectedItems().forEach((oItem) => {
+					this._oListFilterState.aSearch.push(new Filter("CustomerID", FilterOperator.EQ, oItem.getKey()))
+				})
+			}
+			
+
 			this._applyFilterSearch();
 
 		},
@@ -157,7 +186,7 @@ sap.ui.define([
 		 * and group settings and refreshes the list binding.
 		 * @public
 		 */
-		onRefresh : function () {
+		onRefresh: function () {
 			this._oList.getBinding("items").refresh();
 		},
 
@@ -166,7 +195,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the button press event
 		 * @public
 		 */
-		onOpenViewSettings : function (oEvent) {
+		onOpenViewSettings: function (oEvent) {
 			var sDialogTab = "filter";
 			if (oEvent.getSource() instanceof sap.m.Button) {
 				var sButtonId = oEvent.getSource().getId();
@@ -182,7 +211,7 @@ sap.ui.define([
 					id: this.getView().getId(),
 					name: "ns.worklist.view.ViewSettingsDialog",
 					controller: this
-				}).then(function(oDialog){
+				}).then(function (oDialog) {
 					// connect dialog to the root view of this component (models, lifecycle)
 					this.getView().addDependent(oDialog);
 					oDialog.addStyleClass(this.getOwnerComponent().getContentDensityClass());
@@ -202,7 +231,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the confirm event
 		 * @public
 		 */
-		onConfirmViewSettingsDialog : function (oEvent) {
+		onConfirmViewSettingsDialog: function (oEvent) {
 			var aFilterItems = oEvent.getParameters().filterItems,
 				aFilters = [],
 				aCaptions = [];
@@ -210,16 +239,8 @@ sap.ui.define([
 			// update filter state:
 			// combine the filter array and the filter string
 			aFilterItems.forEach(function (oItem) {
-				switch (oItem.getKey()) {
-					case "Filter1" :
-						aFilters.push(new Filter("CustomerID", FilterOperator.Contains, oItem.getText()));
-						break;
-					case "Filter2" :
-						aFilters.push(new Filter("RequiredDate", FilterOperator.Contains, oItem.getText()));
-						break;
-					default :
-						break;
-				}
+
+				aFilters.push(new Filter("CustomerID", FilterOperator.EQ, oItem.getKey()));
 				aCaptions.push(oItem.getText());
 			});
 
@@ -258,7 +279,7 @@ sap.ui.define([
 		 * @param {sap.ui.base.Event} oEvent the list selectionChange event
 		 * @public
 		 */
-		onSelectionChange : function (oEvent) {
+		onSelectionChange: function (oEvent) {
 			var oList = oEvent.getSource(),
 				bSelected = oEvent.getParameter("selected");
 
@@ -274,7 +295,7 @@ sap.ui.define([
 		 * If there was an object selected in the master list, that selection is removed.
 		 * @public
 		 */
-		onBypassed : function () {
+		onBypassed: function () {
 			this._oList.removeSelections(true);
 		},
 
@@ -286,10 +307,10 @@ sap.ui.define([
 		 * @public
 		 * @returns {sap.m.GroupHeaderListItem} group header with non-capitalized caption.
 		 */
-		createGroupHeader : function (oGroup) {
+		createGroupHeader: function (oGroup) {
 			return new GroupHeaderListItem({
-				title : oGroup.text,
-				upperCase : false
+				title: oGroup.text,
+				upperCase: false
 			});
 		},
 
@@ -298,17 +319,17 @@ sap.ui.define([
 		 * We navigate back in the browser historz
 		 * @public
 		 */
-		onNavBack : function() {
+		onNavBack: function () {
 			// eslint-disable-next-line sap-no-history-manipulation
 			history.go(-1);
-        },
-        
+		},
+
 		/* =========================================================== */
 		/* begin: internal methods                                     */
 		/* =========================================================== */
 
 
-		_createViewModel : function() {
+		_createViewModel: function () {
 			return new JSONModel({
 				isFilterBarVisible: false,
 				filterBarLabel: "",
@@ -320,7 +341,7 @@ sap.ui.define([
 			});
 		},
 
-		_onMasterMatched :  function() {
+		_onMasterMatched: function () {
 			//Set the layout property of the FCL control to 'OneColumn'
 			this.getModel("appView").setProperty("/layout", "OneColumn");
 		},
@@ -331,12 +352,12 @@ sap.ui.define([
 		 * @param {sap.m.ObjectListItem} oItem selected Item
 		 * @private
 		 */
-		_showDetail : function (oItem) {
+		_showDetail: function (oItem) {
 			var bReplace = !Device.system.phone;
 			// set the layout property of FCL control to show two columns
 			this.getModel("appView").setProperty("/layout", "TwoColumnsMidExpanded");
 			this.getRouter().navTo("object", {
-				objectId : oItem.getBindingContext().getProperty("OrderID")
+				objectId: oItem.getBindingContext().getProperty("OrderID")
 			}, bReplace);
 		},
 
@@ -345,7 +366,7 @@ sap.ui.define([
 		 * @param {integer} iTotalItems the total number of items in the list
 		 * @private
 		 */
-		_updateListItemCount : function (iTotalItems) {
+		_updateListItemCount: function (iTotalItems) {
 			var sTitle;
 			// only update the counter if the length is final
 			if (this._oList.getBinding("items").isLengthFinal()) {
@@ -358,7 +379,7 @@ sap.ui.define([
 		 * Internal helper method to apply both filter and search state together on the list binding
 		 * @private
 		 */
-		_applyFilterSearch : function () {
+		_applyFilterSearch: function () {
 			var aFilters = this._oListFilterState.aSearch.concat(this._oListFilterState.aFilter),
 				oViewModel = this.getModel("masterView");
 			this._oList.getBinding("items").filter(aFilters, "Application");
@@ -376,7 +397,7 @@ sap.ui.define([
 		 * @param {string} sFilterBarText the selected filter value
 		 * @private
 		 */
-		_updateFilterBar : function (sFilterBarText) {
+		_updateFilterBar: function (sFilterBarText) {
 			var oViewModel = this.getModel("masterView");
 			oViewModel.setProperty("/isFilterBarVisible", (this._oListFilterState.aFilter.length > 0));
 			oViewModel.setProperty("/filterBarLabel", this.getResourceBundle().getText("masterFilterBarText", [sFilterBarText]));
